@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caring Bear Dreamworld - Interactive Magic Experience</title>
+  <meta name="description" content="An interactive, device-responsive web application featuring the magical Caring Bear. Customize your bear, change the weather, activate the magic stare, and synthesize musical soundscapes.">
+  
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome CDN for modern vector icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- The rotating rainbow backdrop when the bear is happy -->
+  <div class="backdrop"></div>
+  
+  <!-- Hearts container for generated particles -->
+  <div class="hearts"></div>
+  
+  <!-- Raining overlay droplets container -->
+  <div class="rain">
+    <svg style="display: none;"><path id="drop-path"></path></svg>
+  </div>
+
+  <!-- Background decorative clouds -->
+  <div class="clouds-bg" id="clouds-bg">
+    <div class="cloud-sprite c1"><i class="fa-solid fa-cloud"></i></div>
+    <div class="cloud-sprite c2"><i class="fa-solid fa-cloud"></i></div>
+    <div class="cloud-sprite c3"><i class="fa-solid fa-cloud"></i></div>
+  </div>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-container">
+    
+    <!-- Top Glassmorphic Navigation Bar -->
+    <header class="app-header">
+      <div class="brand">
+        <i class="fa-solid fa-wand-magic-sparkles brand-icon"></i>
+        <h1>Caring Bear <span class="brand-sub">Dreamworld</span></h1>
+      </div>
+      <div class="header-actions">
+        <button id="help-btn" class="icon-btn" title="How to Interact" aria-label="Instructions">
+          <i class="fa-solid fa-circle-question"></i>
+        </button>
+        <button id="theme-btn" class="icon-btn" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Workspace -->
+    <main class="app-main">
+      
+      <!-- LEFT CONTAINER: Bear Customizer Panel (Glassmorphism) -->
+      <aside class="control-panel left-panel" id="customizer-panel">
+        <div class="panel-section">
+          <h2><i class="fa-solid fa-paw section-icon"></i> Care Bear Presets</h2>
+          <p class="section-desc">Choose a classic Care Bear and load its special abilities.</p>
+          
+          <div class="presets-grid">
+            <button class="preset-card active" data-preset="cheer" data-hue="330" data-sat="90" data-light="60">
+              <span class="preset-color cheer-bg"></span>
+              <div class="preset-info">
+                <h3>Cheer Bear</h3>
+                <span>Pink • Hope</span>
+              </div>
+            </button>
+            <button class="preset-card" data-preset="grumpy" data-hue="200" data-sat="80" data-light="50">
+              <span class="preset-color grumpy-bg"></span>
+              <div class="preset-info">
+                <h3>Grumpy Bear</h3>
+                <span>Blue • Rain</span>
+              </div>
+            </button>
+            <button class="preset-card" data-preset="bedtime" data-hue="180" data-sat="65" data-light="55">
+              <span class="preset-color bedtime-bg"></span>
+              <div class="preset-info">
+                <h3>Bedtime Bear</h3>
+                <span>Teal • Sleep</span>
+              </div>
+            </button>
+            <button class="preset-card" data-preset="funshine" data-hue="48" data-sat="95" data-light="50">
+              <span class="preset-color funshine-bg"></span>
+              <div class="preset-info">
+                <h3>Funshine Bear</h3>
+                <span>Yellow • Sunshine</span>
+              </div>
+            </button>
+            <button class="preset-card" data-preset="share" data-hue="280" data-sat="75" data-light="55">
+              <span class="preset-color share-bg"></span>
+              <div class="preset-info">
+                <h3>Share Bear</h3>
+                <span>Lavender • Kindness</span>
+              </div>
+            </button>
+            <button class="preset-card" data-preset="tenderheart" data-hue="25" data-sat="65" data-light="45">
+              <span class="preset-color tenderheart-bg"></span>
+              <div class="preset-info">
+                <h3>Tenderheart</h3>
+                <span>Brown • Love</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h2><i class="fa-solid fa-palette section-icon"></i> Color Workshop</h2>
+          <p class="section-desc">Create your own unique custom Care Bear.</p>
+          
+          <div class="color-sliders">
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="hue-slider">Bear Hue</label>
+                <span id="hue-val">330°</span>
+              </div>
+              <input type="range" id="hue-slider" min="0" max="360" value="330" class="custom-range range-hue">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="sat-slider">Saturation</label>
+                <span id="sat-val">90%</span>
+              </div>
+              <input type="range" id="sat-slider" min="0" max="100" value="90" class="custom-range">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="light-slider">Lightness</label>
+                <span id="light-val">60%</span>
+              </div>
+              <input type="range" id="light-slider" min="20" max="80" value="60" class="custom-range">
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CENTER DISPLAY: The Bear itself and floating prompt -->
+      <section class="bear-display">
+        
+        <!-- Pulse ring element behind bear belly for stare aura -->
+        <div id="stare-aura" class="stare-aura-glow"></div>
+        
+        <span class="bear-trigger-wrapper" title="Hold mouse/finger down, or press Spacebar">
+          <svg class="care-bear" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 59.068209 54.91329" id="main-bear-svg">
+            <g transform="translate(-70.967674 -112.10752)">
+              
+              <!-- RIGHT EAR -->
+              <g class="care-bear__ear care-bear__ear--right" transform="translate(19.587616 -5.1859387)">
+                <circle r="5.953125" cy="124.5695" cx="89.267891"></circle>
+                <circle cx="89.267891" cy="124.5695" r="4.3193078"></circle>
+              </g>
+              
+              <!-- LEFT EAR -->
+              <g class="care-bear__ear care-bear__ear--left" transform="translate(3.1834476 -5.1859387)">
+                <circle cx="89.267891" cy="124.5695" r="5.953125"></circle>
+                <circle r="4.3193078" cy="124.5695" cx="89.267891"></circle>
+              </g>
+              
+              <!-- RIGHT ARM -->
+              <g class="care-bear__arm care-bear__arm--right">
+                <rect transform="matrix(.69012 .7237 .69116 -.7227 0 0)" ry="2.5978234" y="-19.412512" x="174.93823" height="19.637407" width="5.1956468"></rect>
+              </g>
+              
+              <!-- LEFT ARM -->
+              <g class="care-bear__arm care-bear__arm--left">
+                <rect width="5.1956468" height="19.637407" x="29.517857" y="-165.03149" ry="2.5978234" transform="matrix(-.69012 .7237 -.69116 -.7227 0 0)"></rect>
+              </g>
+              
+              <!-- FEET / LEGS -->
+              <g class="care-bear__feet">
+                <path d="M94.1591085 159.39647033l1.13016505 3.97753411a5.29166634 5.29166634 0 00-.59738153-.03824023 5.29166634 5.29166634 0 00-5.02863109 3.68504783h21.7004818a5.29166634 5.29166634 0 00-5.0301842-3.68504783 5.29166634 5.29166634 0 00-.5968603.03720836l1.12964647-3.97650224z"></path>
+              </g>
+              
+              <!-- HEAD -->
+              <g class="care-bear__head">
+                <circle cx="100.51268" cy="128.75888" r="13.229167"></circle>
+              </g>
+              
+              <!-- BELLY (Outer, Inner, Belly Badge Heart) -->
+              <g class="care-bear__belly">
+                <circle cx="100.51268" cy="149.04999" r="13.229167"></circle>
+                <circle cx="100.51268" cy="149.04999" r="8.598958"></circle>
+                <g class="care-bear__heart">
+                  <path d="M98.30347449 144.82645224c-.65124542 0-1.3024231.24925602-1.80144155.74827342-.99803372.99803478-.99803372 2.60484935 0 3.6028815l.4919599.49299282 3.60339796 3.6028815 3.60339744-3.6028815.32246093-.32297687c.99803744-.99803479.99803744-2.60536265 0-3.60339743-.49901474-.4990174-1.15013845-.748792-1.80144207-.748792-.65130097 0-1.30293797.2497746-1.80195536.748792l-.32246094.32297687-.49196095-.4924769c-.4990174-.49901739-1.1507126-.7482734-1.80195536-.7482734z"></path>
+                </g>
+              </g>
+              
+              <!-- MUZZLE -->
+              <g class="care-bear__muzzle">
+                <circle cx="100.29227" cy="132.97391" r="5.9451938"></circle>
+              </g>
+              
+              <!-- NOSE -->
+              <g class="care-bear__nose">
+                <ellipse cx="100.29227" cy="129.55186" rx="1.5612032" ry="1.1618258"></ellipse>
+              </g>
+              
+              <!-- EYE RIGHT -->
+              <g class="care-bear__eye care-bear__eye--right" transform="translate(17.991638)">
+                <circle cx="91.364403" cy="128.15633" r="1.3229166"></circle>
+                <g class="care-bear__pupil care-bear__pupil--right">
+                  <circle cx="91.89357" cy="127.62716" r=".26458332" fill="#fff"></circle>
+                </g>
+              </g>
+              
+              <!-- EYE LEFT -->
+              <g class="care-bear__eye care-bear__eye--left">
+                <circle r="1.3229166" cy="128.15633" cx="91.364403"></circle>
+                <g class="care-bear__pupil care-bear__pupil--left">
+                  <circle r=".26458332" cy="127.62716" cx="91.89357" fill="#fff"></circle>
+                </g>
+              </g>
+              
+              <!-- CHEEK LEFT -->
+              <g class="care-bear__cheek care-bear__cheek--left">
+                <circle cx="91.364403" cy="128.15633" r="1.3229166" fill="#faa" transform="translate(0 3.1750001)"></circle>
+              </g>
+              
+              <!-- CHEEK RIGHT -->
+              <g class="care-bear__cheek care-bear__cheek--right">
+                <circle r="1.3229166" cy="128.15633" cx="91.364403" transform="translate(17.991638 3.1750001)" fill="#faa"></circle>
+              </g>
+              
+              <!-- MOUTH AND TONGUE -->
+              <g class="care-bear__mouth">
+                <path d="M98.069425 133.1097a2.2359423 2.2359423 0 002.221095 2.00623 2.2359423 2.2359423 0 002.22459-2.00623z"></path>
+                <path d="M100.97006285 134.12669591a.76244812.72614104 0 00-.76274347.7260537.76244812.72614104 0 00.05167577.26199835 2.23594226 2.23594226 0 00.03152246.00105834 2.23594226 2.23594226 0 001.40094757-.49506187.76244812.72614104 0 00-.72140233-.4940247z" fill="red"></path>
+              </g>
+              
+            </g>
+          </svg>
+        </span>
+
+        <!-- Bear dialogue bubble / state indicator -->
+        <div class="speech-bubble" id="bear-quote">
+          I'm feeling a bit blue... Can you send me some love?
+        </div>
+        
+        <!-- Helper prompt underneath bear -->
+        <div class="interaction-instruction">
+          <i class="fa-solid fa-mouse"></i> Click & Hold Bear <span class="divider">or</span> <kbd>Spacebar</kbd> to activate Care Bear Stare!
+        </div>
+
+        <!-- MOBILE-ONLY: Collapsible panel toggle button -->
+        <button id="mobile-control-toggle" class="mobile-toggle-btn">
+          <i class="fa-solid fa-sliders"></i> Customize World
+        </button>
+      </section>
+
+      <!-- RIGHT CONTAINER: Environmental & Sound Controls -->
+      <aside class="control-panel right-panel" id="environment-panel">
+        <div class="panel-section">
+          <h2><i class="fa-solid fa-cloud-sun section-icon"></i> Weather Engine</h2>
+          <p class="section-desc">Change the skies of Care-a-lot to match your mood.</p>
+          
+          <div class="weather-selector">
+            <button class="weather-btn active" data-weather="drizzle" title="Soft soothing drizzle">
+              <i class="fa-solid fa-cloud-rain"></i>
+              <span>Drizzle</span>
+            </button>
+            <button class="weather-btn" data-weather="storm" title="Heavy magical storm">
+              <i class="fa-solid fa-cloud-bolt"></i>
+              <span>Storm</span>
+            </button>
+            <button class="weather-btn" data-weather="clear" title="Bright sunny day">
+              <i class="fa-solid fa-sun"></i>
+              <span>Sunny</span>
+            </button>
+            <button class="weather-btn" data-weather="hearts" title="A shower of starry hearts">
+              <i class="fa-solid fa-heart-pulse"></i>
+              <span>Hearts</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h2><i class="fa-solid fa-music section-icon"></i> Magic Synthesizer</h2>
+          <p class="section-desc">Tune your ambient chimes and weather synthesizers.</p>
+          
+          <div class="synth-settings">
+            <div class="toggle-control">
+              <div class="toggle-label">
+                <span>Sound Effects</span>
+                <span class="label-desc">Toggle musical synth chimes</span>
+              </div>
+              <label class="switch-toggle" for="sound-toggle">
+                <input type="checkbox" id="sound-toggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="rain-vol">Ambient Rain Volume</label>
+                <span id="rain-vol-val">50%</span>
+              </div>
+              <input type="range" id="rain-vol" min="0" max="100" value="50" class="custom-range">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <label for="chime-vol">Magic Chime Volume</label>
+                <span id="chime-vol-val">60%</span>
+              </div>
+              <input type="range" id="chime-vol" min="0" max="100" value="60" class="custom-range">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section center-align">
+          <button id="care-stare-btn" class="stare-btn-cta">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> CARE BEAR STARE!
+          </button>
+          <p class="cta-subtitle">Click and hold to fire love beams</p>
+        </div>
+      </aside>
+      
+    </main>
+
+  </div>
+
+  <!-- Instruction Overlay Modal (Shows at first load or when help clicked) -->
+  <div class="help-modal" id="help-modal">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close-btn">&times;</button>
+      <h2>Welcome to Care-a-lot! <i class="fa-solid fa-hand-holding-heart"></i></h2>
+      <p class="intro-p">This is an immersive interactive web experience where your care can brighten up a sad, sulking bear.</p>
+      
+      <div class="instructions-steps">
+        <div class="step-card">
+          <div class="step-icon"><i class="fa-solid fa-hand-pointer"></i></div>
+          <div class="step-details">
+            <h3>Hold to Care</h3>
+            <p>Press and hold your mouse or touch the bear to start the <strong>Care Bear Stare</strong>. The rotating rainbow backdrop will spin, and the bear will glow in colorful joy!</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-icon"><i class="fa-solid fa-keyboard"></i></div>
+          <div class="step-details">
+            <h3>Keyboard Shortcuts</h3>
+            <p>You can hold down the <kbd>Spacebar</kbd> key at any time to activate the Care Bear Stare beam.</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-icon"><i class="fa-solid fa-palette"></i></div>
+          <div class="step-details">
+            <h3>Customization Workshop</h3>
+            <p>Use the panels to switch between presets like <strong>Grumpy Bear</strong> or <strong>Cheer Bear</strong>, slide colors to paint your own bear, and control the weather system!</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-icon"><i class="fa-solid fa-volume-high"></i></div>
+          <div class="step-details">
+            <h3>Magical Synthesizer</h3>
+            <p>Enable sound to listen to the Web Audio ambient synthesizers. You will hear raindrops falling and musical chimes sparkling as you interact.</p>
+          </div>
+        </div>
+      </div>
+
+      <button id="modal-start-btn" class="modal-cta-btn">Start Exploring</button>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner">
+      <i class="fa-solid fa-wand-magic-sparkles spinner-icon"></i>
+      <span class="loading-text">Invoking Care-a-lot Magic...</span>
+    </div>
+  </div>
+
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- Main application script -->
+  <script src="app.js"></script>
+</body>
+</html>
